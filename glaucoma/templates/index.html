@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InSight | Eye Disease Prediction</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}?v=4">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo">
+                <i class="fa-solid fa-eye"></i> InSig<span class="highlight">ht</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#prediction" class="cta-link">Prediction</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>AI-Powered <br><span class="highlight-text">Glaucoma Detection</span></h1>
+                    <p class="hero-subtitle">Early diagnosis saves sight. Utilizing advanced Deep Learning to predict
+                        eye diseases with precision.</p>
+                    <div class="hero-buttons">
+                        <a href="#prediction" class="btn btn-primary">Try Prediction</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <h3>Why Choose InSight</h3>
+                    <p>Glaucoma is a leading cause of irreversible blindness. Our AI assists clinicians, especially in
+                        rural areas, with efficient early diagnosis to prevent vision loss.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fa-solid fa-microchip"></i></div>
+                    <h3>Advanced Tech</h3>
+                    <p>Leveraging CNNs for image analysis and GANs for data augmentation. Our models are trained on
+                        diverse datasets for robust performance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fa-solid fa-file-medical"></i></div>
+                    <h3>Smart Services</h3>
+                    <p>Automated diagnosis, personalized insights, and remote monitoring capabilities to revolutionize
+                        eye care delivery.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fa-solid fa-flask"></i></div>
+                    <h3>Scientific Core</h3>
+                    <p>Analyzing OCT scans and fundus photography to identify biomarkers and understand disease
+                        progression patterns.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>About The Project</h2>
+                </div>
+
+                <div class="abstract-card">
+                    <p>Glaucoma results in damage to the optic nerve and vision loss. It's often called the "silent
+                        thief of sight" because it develops slowly without early warning signs. Our solution employs
+                        a Convolutional Neural Network (CNN) architecture to detect glaucoma from retinal fundus
+                        images with high accuracy (98%). By analyzing the optic cup-to-disc ratio and textural
+                        patterns, the model differentiates between healthy and glaucomatous eyes, providing a
+                        reliable second opinion for medical professionals.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prediction Section -->
+        <section id="prediction" class="prediction-section">
+            <div class="container">
+                <div class="prediction-wrapper">
+                    <div class="prediction-card">
+                        <h2>Run Diagnosis</h2>
+                        <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="upload-area" id="drop-area">
+                                <i class="fa-solid fa-cloud-upload-alt"></i>
+                                <p>Drag & drop eye image here or click to browse</p>
+                                <input type="file" id="imageInput" class="file-input" accept="image/*"
+                                    onchange="previewImage(this)">
+                            </div>
+                            <div id="imageContainer" class="image-preview"></div>
+                            <button type="button" id="predictBtn" class="btn btn-predict">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Image
+                            </button>
+                        </form>
+                    </div>
+
+                    <div id="result-container" class="result-container">
+                        <div id="predictionResult" class="prediction-output"></div>
+
+                        <!-- Cards will be injected/shown via JS -->
+                        <div class="info-card positive-card" id="positive-card">
+                            <h3><i class="fa-solid fa-triangle-exclamation"></i> Action Required</h3>
+                            <ul>
+                                <li><strong>Consult Specialist:</strong> Immediate appointment with an ophthalmologist.
+                                </li>
+                                <li><strong>Adhere to Treatment:</strong> Use prescribed medications/eye drops strictly.
+                                </li>
+                                <li><strong>Regular Monitoring:</strong> Schedule frequent IOP checks.</li>
+                                <li><strong>Lifestyle:</strong> Maintain healthy weight and manage stress.</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-card negative-card" id="negative-card">
+                            <h3><i class="fa-solid fa-shield-heart"></i> Maintain Eye Health</h3>
+                            <ul>
+                                <li><strong>Balanced Diet:</strong> Eat green leafy vegetables and foods rich in
+                                    antioxidants.</li>
+                                <li><strong>Screen Rules:</strong> Follow the 20-20-20 rule for digital screens.</li>
+                                <li><strong>UV Protection:</strong> Wear sunglasses outdoors.</li>
+                                <li><strong>No Smoking:</strong> Avoid smoking to reduce risk of optic nerve damage.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 InSight Glaucoma Detection Project. All rights reserved.</p>
+    </footer>
+
+    <script src="{% static 'index.js' %}"></script>
+</body>
+
+</html>

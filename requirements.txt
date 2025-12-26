@@ -1,4 +1,4 @@
-tflite-runtime
+ai-edge-litert
 Pillow
 django
 numpy<2.0

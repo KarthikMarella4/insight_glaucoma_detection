@@ -4,14 +4,17 @@ import numpy as np
 from PIL import Image
 import os
 
-# Try to import tflite_runtime, fallback to tensorflow.lite if not available
+# Try to import ai_edge_litert (modern), fallback to tflite_runtime/tensorflow
 try:
-    import tflite_runtime.interpreter as tflite
+    import ai_edge_litert.interpreter as tflite
 except ImportError:
     try:
-        import tensorflow.lite as tflite
+        import tflite_runtime.interpreter as tflite
     except ImportError:
-        raise ImportError("Neither tflite_runtime nor tensorflow is installed.")
+        try:
+            import tensorflow.lite as tflite
+        except ImportError:
+            raise ImportError("Neither ai_edge_litert, tflite_runtime nor tensorflow is installed.")
 
 def home(request):
     return render(request, 'index.html')
@@ -33,18 +36,18 @@ def prediction(request):
 
     if request.method == 'POST' and request.FILES['image']:
         try:
-            print("DEBUG: Request received. Processing image...")
+            print("DEBUG: Request received. Processing image...", flush=True)
             image_file = request.FILES['image']
 
             # Save temp file
             with open('temp_image.jpg', 'wb+') as destination:
                 for chunk in image_file.chunks():
                     destination.write(chunk)
-            print("DEBUG: Image saved to temp_image.jpg")
+            print("DEBUG: Image saved to temp_image.jpg", flush=True)
 
             # TFLite Inference setup
             lite_model_path = 'model.tflite'
-            print(f"DEBUG: Loading model from {lite_model_path}")
+            print(f"DEBUG: Loading model from {lite_model_path}", flush=True)
             
             # Helper to load interpreter depending on the imported library structure
             if hasattr(tflite, 'Interpreter'):
@@ -52,16 +55,16 @@ def prediction(request):
             else:
                 interpreter = tflite.Interpreter(model_path=lite_model_path)
             
-            print("DEBUG: Interpreter created. Allocating tensors...")
+            print("DEBUG: Interpreter created. Allocating tensors...", flush=True)
             interpreter.allocate_tensors()
-            print("DEBUG: Tensors allocated.")
+            print("DEBUG: Tensors allocated.", flush=True)
 
             # Get input and output details
             input_details = interpreter.get_input_details()
             output_details = interpreter.get_output_details()
 
             # Load and preprocess image using PIL (removes keras dependency)
-            print("DEBUG: Loading image with PIL...")
+            print("DEBUG: Loading image with PIL...", flush=True)
             img = Image.open('temp_image.jpg').resize((256, 256))
             img_array = np.array(img).astype('float32')
             
@@ -70,23 +73,23 @@ def prediction(request):
             
             # Reshape for model input
             img_array = img_array.reshape(1, 256, 256, 3)
-            print(f"DEBUG: Image preprocessed. Shape: {img_array.shape}")
+            print(f"DEBUG: Image preprocessed. Shape: {img_array.shape}", flush=True)
 
             # Set input tensor
             interpreter.set_tensor(input_details[0]['index'], img_array)
 
             # Run inference
-            print("DEBUG: Invoking interpreter (Running inference)...")
+            print("DEBUG: Invoking interpreter (Running inference)...", flush=True)
             interpreter.invoke()
-            print("DEBUG: Inference complete.")
+            print("DEBUG: Inference complete.", flush=True)
 
             # Get output tensor
             predict = interpreter.get_tensor(output_details[0]['index'])
-            print(f"DEBUG: Prediction result raw: {predict}")
+            print(f"DEBUG: Prediction result raw: {predict}", flush=True)
 
             normalized_output_exp = softmax(predict)
             percentages_exp = normalized_output_exp * 100
-            print(f"DEBUG: Percentages: {percentages_exp}")
+            print(f"DEBUG: Percentages: {percentages_exp}", flush=True)
             
             result = np.argmax(predict)
             output = ''
@@ -100,10 +103,10 @@ def prediction(request):
                 output = "Normal Eye"
 
             prediction = output
-            print(f"DEBUG: Final prediction: {prediction}")
+            print(f"DEBUG: Final prediction: {prediction}", flush=True)
 
         except Exception as e:
-            print(f"ERROR: Exception during prediction: {e}")
+            print(f"ERROR: Exception during prediction: {e}", flush=True)
             import traceback
             traceback.print_exc()
             return JsonResponse({'error': str(e)}, status=500)
@@ -112,7 +115,7 @@ def prediction(request):
             # Clean up temp file
             if os.path.exists('temp_image.jpg'):
                 os.remove('temp_image.jpg')
-                print("DEBUG: Cleaned up temp file.")
+                print("DEBUG: Cleaned up temp file.", flush=True)
 
         return JsonResponse({'prediction': prediction})
 

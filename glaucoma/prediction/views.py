@@ -46,8 +46,27 @@ def prediction(request):
             print("DEBUG: Image saved to temp_image.jpg", flush=True)
 
             # TFLite Inference setup
-            lite_model_path = 'model.tflite'
-            print(f"DEBUG: Loading model from {lite_model_path}", flush=True)
+            # Construct absolute path to ensure we find the file regardless of CWD
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # glaucama/ folder
+            lite_model_path = os.path.join(base_dir, 'model.tflite')
+            
+            print(f"DEBUG: Calculated model path: {lite_model_path}", flush=True)
+
+            if not os.path.exists(lite_model_path):
+                 print(f"ERROR: Model file NOT FOUND at {lite_model_path}", flush=True)
+                 # Fallback check current directory
+                 if os.path.exists('model.tflite'):
+                     lite_model_path = 'model.tflite'
+                     print(f"DEBUG: Found model in current dir, using relative path: {lite_model_path}", flush=True)
+                 else:
+                     raise FileNotFoundError(f"Model file not found at {lite_model_path} or current dir")
+            
+            # Check file size to verify LFS download
+            file_size_mb = os.path.getsize(lite_model_path) / (1024 * 1024)
+            print(f"DEBUG: Model file size: {file_size_mb:.2f} MB", flush=True)
+            
+            if file_size_mb < 1:
+                print("WARNING: Model file is too small! It might be a Git LFS pointer.", flush=True)
             
             # Helper to load interpreter depending on the imported library structure
             if hasattr(tflite, 'Interpreter'):

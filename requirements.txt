@@ -1,6 +1,6 @@
 tflite-runtime
 Pillow
 django
-numpy
+numpy<2.0
 gunicorn
 whitenoise

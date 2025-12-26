@@ -89,9 +89,9 @@ def prediction(request):
             
             # Helper to load interpreter depending on the imported library structure
             if hasattr(tflite, 'Interpreter'):
-                interpreter = tflite.Interpreter(model_path=lite_model_path)
+                interpreter = tflite.Interpreter(model_path=lite_model_path, num_threads=1)
             else:
-                interpreter = tflite.Interpreter(model_path=lite_model_path)
+                interpreter = tflite.Interpreter(model_path=lite_model_path, num_threads=1)
             
             print("DEBUG: Interpreter created. Allocating tensors...", flush=True)
             interpreter.allocate_tensors()

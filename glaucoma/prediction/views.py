@@ -1,4 +1,6 @@
 from django.shortcuts import render
+# Trigger deployment for Int8 model update (Force Push)
+# Trigger deployment for Int8 model update
 from django.http import JsonResponse, HttpResponse
 import numpy as np
 from PIL import Image
@@ -52,27 +54,8 @@ def prediction(request):
             
             print(f"DEBUG: Calculated model path: {lite_model_path}", flush=True)
 
-            # Check if model exists, if not, try to reconstruct from chunks
             if not os.path.exists(lite_model_path):
-                 print(f"DEBUG: {lite_model_path} not found. Checking for chunks...", flush=True)
-                 chunk_0 = lite_model_path + ".000"
-                 if os.path.exists(chunk_0):
-                     print("DEBUG: Found chunks. Reassembling model...", flush=True)
-                     with open(lite_model_path, 'wb') as output_file:
-                         part_num = 0
-                         while True:
-                             chunk_path = f"{lite_model_path}.{part_num:03d}"
-                             if not os.path.exists(chunk_path):
-                                 break
-                             print(f"DEBUG: Merging chunk {chunk_path}", flush=True)
-                             with open(chunk_path, 'rb') as input_chunk:
-                                 output_file.write(input_chunk.read())
-                             part_num += 1
-                     print("DEBUG: Model reassembly complete.", flush=True)
-                 else:
-                     print(f"ERROR: Model chunks not found at {chunk_0}", flush=True)
-            
-            if not os.path.exists(lite_model_path):
+                 print(f"ERROR: Model file NOT FOUND at {lite_model_path}", flush=True)
                  # Fallback check current directory
                  if os.path.exists('model.tflite'):
                      lite_model_path = 'model.tflite'
@@ -80,7 +63,7 @@ def prediction(request):
                  else:
                      raise FileNotFoundError(f"Model file not found at {lite_model_path} or current dir")
             
-            # Check file size to verify LFS download
+            # Check file size
             file_size_mb = os.path.getsize(lite_model_path) / (1024 * 1024)
             print(f"DEBUG: Model file size: {file_size_mb:.2f} MB", flush=True)
             

@@ -35,17 +35,30 @@ def prediction(request):
             for chunk in image.chunks():
                 destination.write(chunk)
 
-        # prediction=predict_image('temp_image.jpg')
-        model = load_model('combine_cnn.h5')
+        # TFLite Inference
+        lite_model_path = 'model.tflite'
+        interpreter = tf.lite.Interpreter(model_path=lite_model_path)
+        interpreter.allocate_tensors()
 
+        # Get input and output tensors.
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
 
-        #load the image using keras
+        # Load image
         img = load_img('temp_image.jpg', target_size=(256,256))
-
         img_array = img_to_array(img)
         img_array = preprocess_input(img_array)
-        img_array = img_array.reshape(-1, 256, 256, 3)
-        predict = model.predict(img_array)
+        img_array = img_array.reshape(1, 256, 256, 3) # Specific shape for TFLite
+
+        # Set input tensor
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+
+        # Run inference
+        interpreter.invoke()
+
+        # Get output tensor
+        predict = interpreter.get_tensor(output_details[0]['index'])
+        
         normalized_output_exp = softmax(predict)
         percentages_exp = normalized_output_exp * 100
         print(percentages_exp)

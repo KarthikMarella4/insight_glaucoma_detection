@@ -1,11 +1,44 @@
-##### GLAUCOMA-DETECTION-USING-DEEP-LEARNING
 
-![DLP](https://github.com/user-attachments/assets/f21b8363-cb16-4897-baf9-22807f9ca7ca)
-
+# Glaucoma Detection Project
 
 
+## Getting Started
+
+To run this project (using `uv` for speed):
+
+1.  **Install uv** (if not already installed):
+    ```bash
+    pip install uv
+    ```
+
+2.  **Create a Virtual Environment**:
+    ```bash
+    uv venv
+    # Windows:
+    .venv\Scripts\activate
+    # Mac/Linux:
+    source .venv/bin/activate
+    ```
+
+3.  **Install Dependencies**:
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+
+4.  **Run the Project**:
+    ```bash
+    cd glaucoma
+    python manage.py runserver
+    ```
+
+5.  **Access the App**:
+    Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+
+
+---
 
 ### Project Process for Glaucoma Detection Using CNN
+
 
  **Introduction and Problem Statement**:
    - Define glaucoma and its impact on vision.
